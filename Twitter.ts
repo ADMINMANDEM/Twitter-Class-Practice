@@ -10,22 +10,49 @@ class Tweet {
     content: string;
     time: string;
     user: User;
-    constructor(content:string, user: User) {
+    replies: Reply[];
+    
+    constructor(content: string, user: User) {
         this.id = Date.now.toString();
         this.content = content;
         this.time = new Date().toLocaleString();
-        this.user = user
+        this.user = user;
+        this.replies = []
     }
+
+    // getReplies(): string[] {
+    //     return this.replies
+    // }
+
+    replyToTweet(reply: Reply) {
+        this.replies.push(reply)
+    }
+    
+}
+
+interface Reply {
+    user: User;
+    text: string;
 }
 
 class ImageTweet extends Tweet {
     link: string;
+    constructor(content: string, user: User, link: string) {
+        super(content, user);
+        this.link = link;
+    }
 }
 
 class MediaTweet extends Tweet {
     type: string;
     file: FileType;
     link: string;
+    constructor(content: string, user: User, type: string, file: FileType, link: string) {
+        super(content, user);
+        this.link = link;
+        this.file = file;
+        this.type = type;
+    }
 }
 
 class User {
@@ -64,8 +91,14 @@ class User {
 const account = new User("Silas", "password123")
 const account2 = new User("Joseph", "123")
 const tweet1 = new Tweet("Try Goodtill!", account)
-account.createTweet(tweet1)
+const mediaTweet = new MediaTweet("Media", account, "video", FileType.Video, "123.com/ex.mp4")
+const imageTweet = new ImageTweet("My holiday", account, "myphotos.com/plane.jpg")
+account2.createTweet(tweet1)
+account.createTweet(mediaTweet)
+account.createTweet(imageTweet)
+mediaTweet.replyToTweet({user: account2, text: "123"})
 console.log(account.getTweets())
+console.log(account.getTweets()[0].replies)
+console.log(account2.getTweets())
 console.log(account.checkPassword("notpassword"))
 console.log(account.checkPassword("password123"))
-
